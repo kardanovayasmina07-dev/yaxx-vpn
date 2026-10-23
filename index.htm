@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YAXX VPN — Твой личный пульт управления безопасностью</title>
+    <style>
+        /* Общие премиальные стили и неоновый ультра-минималистичный градиент */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            /* Переливающийся градиент за счет увеличения размера фона */
+            background: linear-gradient(135deg, #1f0842 0%, #0d021a 40%, #000000 70%, #1f0842 100%);
+            background-size: 400% 400%;
+            animation: gradientBg 15s ease infinite;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+            padding: 100px 20px 80px 20px;
+        }
+
+        /* Анимация плавного перелива фона */
+        @keyframes gradientBg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Навигация (вкладки) вверху экрана */
+        nav {
+            position: absolute;
+            top: 40px;
+            display: flex;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+        nav button {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        nav button.active {
+            background: linear-gradient(90deg, #00d2ff 0%, #9b51e0 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+        }
+        /* Главный заголовок сайта */
+        h1 {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d2ff 0%, #9b51e0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(155, 81, 224, 0.2);
+            text-align: center;
+        }
+        .subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 16px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        /* Трендовые стеклянные карточки контента (Glassmorphism) */
+        .content-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 480px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            display: none;
+            text-align: center;
+        }
+        .content-box.active {
+            display: block;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        /* Стильные неоновые кнопки действий */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #00d2ff 0%, #9b51e0 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 20px rgba(0, 210, 255, 0.25);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 210, 255, 0.4);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+        /* Тарифы */
+        .tariffs-list { display: flex; flex-direction: column; gap: 15px; }
+        .tariff-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .tariff-name { font-weight: 600; text-align: left; }
+        .tariff-price { color: #9b51e0; font-weight: 700; }
+        footer { position: absolute; bottom: 30px; color: rgba(255, 255, 255, 0.2); font-size: 12px; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Меню переключения вкладок -->
+    <nav>
+        <button id="btn-main" class="nav-btn active" onclick="switchTab('main')">Главная</button>
+        <button id="btn-tariffs" class="nav-btn" onclick="switchTab('tariffs')">Тарифы</button>
+        <button id="btn-instruction" class="nav-btn" onclick="switchTab('instruction')">Инструкция</button>
+    </nav>
+    <h1>YAXX VPN</h1>
+    <div class="subtitle">Твой личный пульт управления безопасностью</div>
+    <!-- ВНЕШНИЙ КОНТЕЙНЕР ДЛЯ ВКЛАДОК -->
+    <div id="tabs-container">
+        <!-- ВКЛАДКА №1: Главная -->
+        <div id="tab-main" class="content-box active">
+            <h2 style="font-size: 24px; color: #00d2ff; margin-bottom: 15px; font-weight: 700;">Скачать приложение</h2>
+            <p style="color: rgba(255, 255, 255, 0.7); font-size: 14px; line-height: 1.6; margin-bottom: 30px;">Приложение находится в процессе разработки. Ты уже можешь скачать тестовую версию для Android, проверить дизайн и авторизацию.</p>
+            
+            <!-- Кнопка скачивания APK -->
+            <a href="https://drive.google.com/file/d/1YmPqc1rn3TDIp2D6fgh41hq7ZiBEZ0hM/view?usp=sharing" download="app-debug.apk" class="btn btn-primary">
+                <span>🔌</span> Скачать YAXX VPN (.APK)
+            </a>
+            
+            <!-- НАСТРОЙКА: Замени НА_ТВОЙ_ЮЗЕРНЕЙМ на имя бота -->
+            <a href="https://t.me" target="_blank" class="btn btn-secondary">
+                <span>💬</span> Открыть Telegram-бота
+            </a>
+        </div>
+
+        <!-- ВКЛАДКА №2: Тарифы -->
+        <div id="tab-tariffs" class="content-box">
+            <h2 style="font-size: 24px; color: #00d2ff; margin-bottom: 15px; font-weight: 700;">Наши тарифы</h2>
+            <p style="color: rgba(255, 255, 255, 0.7); font-size: 14px; line-height: 1.6; margin-bottom: 30px;">Выбирай подходящий период подписки. Высокая скорость и отсутствие ограничений трафика на всех планах!</p>
+            <div class="tariffs-list">
+                <div class="tariff-card">
+                    <div class="tariff-name">1 месяц<br><small style="color:rgba(255,255,255,0.4)">Тестовый доступ</small></div>
+                    <div class="tariff-price">150 ₽</div>
+                </div>
+                <div class="tariff-card">
+                    <div class="tariff-name">3 месяца<br><small style="color:rgba(255,255,255,0.4)">Выгодный план</small></div>
+                    <div class="tariff-price">400 ₽</div>
+                </div>
+                <div class="tariff-card">
+                    <div class="tariff-name">1 год<br><small style="color:rgba(255,255,255,0.4)">Максимальная экономия</small></div>
+                    <div class="tariff-price">1200 ₽</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА №3: Инструкция -->
+        <div id="tab-instruction" class="content-box">
+            <h2 style="font-size: 24px; color: #00d2ff; margin-bottom: 15px; font-weight: 700;">Как подключить?</h2>
+            <p style="color: rgba(255, 255, 255, 0.7); font-size: 14px; line-height: 1.6; margin-bottom: 30px;">Настроить безопасный интернет на твоем устройстве можно всего за три простых шага:</p>
+            <div style="text-align: left; color: rgba(255,255,255,0.8); font-size: 14px; display: flex; flex-direction: column; gap: 12px;">
+                <div><strong>1.</strong> Скачай тестовый APK файл на вкладке «Главная» и установи приложение на свой телефон Android.</div>
+                <div><strong>2.</strong> Перейди в нашего официального Telegram-бота и нажми кнопку активации, чтобы получить свой личный секретный vless-ключ доступа.</div>
+                <div><strong>3.</strong> Вставь полученный ключ на первом экране приложения и нажми большую неоновую кнопку подключения!</div>
+            </div>
+        </div>
+    </div>
+
+    <footer>&copy; 2026 YAXX VPN. All rights reserved.</footer>
+
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.content-box').forEach(box => {
+                box.classList.remove('active');
+            });
+            document.getElementById('btn-' + tabName).classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+    </script>
+</body>
+</html>
